@@ -1,11 +1,15 @@
 import { Component } from 'react';
-import Searchbar from './Searchbar';
+import { SearchBar } from './SearchBar';
 
 export class App extends Component {
+  handleSubmit = searchQuery => {
+    console.log('🚀 ~ file: App.jsx ~ line 6 ~ App ~ searchQuery', searchQuery);
+  };
+
   render() {
     return (
       <div className="App">
-        <Searchbar />
+        <SearchBar onSubmit={this.handleSubmit} />
       </div>
     );
   }
