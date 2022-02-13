@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { SearchBar } from './SearchBar';
+import { SearchBar } from './SearchBar/SearchBar.js';
 
 export class App extends Component {
   handleSubmit = searchQuery => {
