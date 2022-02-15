@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { SearchBar } from './SearchBar/SearchBar.js';
+import { Searchbar } from './Searchbar';
 
 export class App extends Component {
   handleSubmit = searchQuery => {
@@ -9,7 +9,7 @@ export class App extends Component {
   render() {
     return (
       <div className="App">
-        <SearchBar onSubmit={this.handleSubmit} />
+        <Searchbar onSubmit={this.handleSubmit} />
       </div>
     );
   }

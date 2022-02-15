@@ -1,7 +1,7 @@
 import { Component } from 'react';
-import s from './SearchBar.module.css';
+import s from './Searchbar.module.css';
 
-export class SearchBar extends Component {
+export class Searchbar extends Component {
   state = {
     searchQuery: '',
   };
