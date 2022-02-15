@@ -1,47 +1,52 @@
 import axios from 'axios';
 
 export default class ServiceAPI {
-  constructor() {
-    this.options = {
-      params: {
-        key: '25182566-6d97045846fa1b6cae2a84492',
-        q: '',
-        image_type: 'photo',
-        orientation: 'horizontal',
-        safesearch: true,
-        page: 1,
-        per_page: 39,
-      },
-    };
-  }
+  state = {
+    options: {
+      key: '25182566-6d97045846fa1b6cae2a84492',
+      q: '',
+      image_type: 'photo',
+      orientation: 'horizontal',
+      safesearch: true,
+      page: 1,
+      total_page: 0,
+      per_page: 12,
+    },
+  };
 
   async getPictures() {
-    const response = await axios.get('https://pixabay.com/api/', this.options);
+    const response = await axios.get(
+      'https://pixabay.com/api/',
+      this.state.options,
+    );
     this.incrementPage();
     return response;
   }
 
   incrementPage() {
-    this.options.params.page += 1;
+    this.setState(prevState => {
+      const page = prevState.options.page + 1;
+      return { page: page };
+    });
   }
 
-  resetPage() {
-    this.pageNumber = 1;
+  resetSearch() {
+    this.setState({ page: 1, total_page: 0, q: '' });
   }
 
   get searchQuery() {
-    return this.options.params.q;
+    return this.state.options.q;
   }
 
   set searchQuery(newQuery) {
-    this.options.params.q = newQuery;
+    this.setState({ q: newQuery });
   }
 
   get pageNumber() {
-    return this.options.params.page;
+    return this.state.options.page;
   }
 
   set pageNumber(newNumber) {
-    this.options.params.page = newNumber;
+    this.setState({ page: newNumber });
   }
 }
