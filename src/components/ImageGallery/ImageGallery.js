@@ -1,5 +1,6 @@
 import { ServiceAPI } from 'components/API';
 import { Component } from 'react';
+import { ImageGalleryItem } from '.';
 import s from './ImageGallery.module.css';
 
 class ImageGallery extends Component {
@@ -17,10 +18,21 @@ class ImageGallery extends Component {
     ) {
       this.setState({ status: 'pending' });
       ServiceAPI(this.props.query, this.page)
-        .then(response => this.setState({ response, status: 'resolved' }))
+        .then(this.dataProcessing)
         .catch(error => this.setState({ error, status: 'rejected' }));
     }
   }
+
+  dataProcessing = response => {
+    const data = response.data.hits.map(data => {
+      const { id, largeImageURL: imageURL, webformatURL: src, tag: alt } = data;
+      return { id, imageURL, src, alt };
+    });
+    return this.setState({
+      response: data,
+      status: 'resolved',
+    });
+  };
 
   render() {
     const { status } = this.state;
@@ -36,7 +48,7 @@ class ImageGallery extends Component {
     if (status === 'resolved') {
       return (
         <ul className={s.ImageGallery}>
-          <li>test</li>
+          <ImageGalleryItem images={this.state.response} />
         </ul>
       );
     }
@@ -49,11 +61,7 @@ class ImageGallery extends Component {
     }
 
     if (status === 'idle') {
-      return (
-        <ul className={s.ImageGallery}>
-          <li>Ничего не происходит</li>
-        </ul>
-      );
+      return <></>;
     }
   }
 }
