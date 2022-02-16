@@ -1,5 +1,7 @@
 import { ServiceAPI } from 'components/API';
 import { Component } from 'react';
+import { Watch } from 'react-loader-spinner';
+import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
 import { ImageGalleryItem } from '.';
 import s from './ImageGallery.module.css';
 
@@ -7,7 +9,7 @@ class ImageGallery extends Component {
   state = {
     page: 1,
     status: 'idle',
-    response: null,
+    response: [],
     error: null,
   };
 
@@ -54,9 +56,9 @@ class ImageGallery extends Component {
     }
     if (status === 'pending') {
       return (
-        <ul className={s.ImageGallery}>
-          <li>Загружаем...</li>
-        </ul>
+        <div className={s.Watch}>
+          <Watch color="#00BFFF" height={200} width={200} ariaLabel="loading" />
+        </div>
       );
     }
 

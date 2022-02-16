@@ -4,7 +4,7 @@ export const ImageGalleryItem = props => {
   return props.images.map(({ id, src, alt }) => {
     return (
       <li className={s.ImageGalleryItem} key={id}>
-        <img className={s.ImageGalleryItem__image} src={src} alt={alt} />
+        <img className={s.ImageGalleryItemImage} src={src} alt={alt} />
       </li>
     );
   });
