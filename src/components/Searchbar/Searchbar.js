@@ -13,7 +13,15 @@ export class Searchbar extends Component {
 
   handleSubmit = e => {
     e.preventDefault();
-    this.props.onSubmit(this.state.searchQuery);
+
+    const { searchQuery } = this.state;
+    const normalizeSearchQuery = searchQuery.trim().toLowerCase();
+
+    if (!normalizeSearchQuery) {
+      return;
+    }
+
+    this.props.onSubmit(normalizeSearchQuery);
     this.setState({ searchQuery: '' });
   };
 

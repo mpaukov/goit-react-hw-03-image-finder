@@ -1,21 +1,20 @@
 import { Component } from 'react';
-import { Searchbar } from './Searchbar';
 import ImageGallery from './ImageGallery';
+import { Searchbar } from './Searchbar';
 
 export class App extends Component {
   state = {
     searchQuery: '',
-    status: 'ready',
   };
-  handleSubmit = newSearchQuery => {
-    this.setState({ searchQuery: newSearchQuery });
+  handleSubmit = searchQuery => {
+    this.setState({ searchQuery });
   };
 
   render() {
     return (
       <div className="App">
         <Searchbar onSubmit={this.handleSubmit} />
-        {this.state.searchQuery && <ImageGallery />}
+        <ImageGallery query={this.state.searchQuery} />
       </div>
     );
   }
