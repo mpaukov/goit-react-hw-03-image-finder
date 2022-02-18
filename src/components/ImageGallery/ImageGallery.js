@@ -1,5 +1,6 @@
 import { ServiceAPI } from 'components/API';
 import { Button } from 'components/Button';
+import { Modal } from '../Modal';
 import { Component } from 'react';
 import { Watch } from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
@@ -12,6 +13,8 @@ class ImageGallery extends Component {
     status: 'idle',
     response: [],
     error: null,
+    showModal: false,
+    imgId: null,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -34,7 +37,12 @@ class ImageGallery extends Component {
 
   dataProcessing = response => {
     const data = response.data.hits.map(data => {
-      const { id, largeImageURL: imageURL, webformatURL: src, tag: alt } = data;
+      const {
+        id,
+        largeImageURL: imageURL,
+        webformatURL: src,
+        tags: alt,
+      } = data;
       return { id, imageURL, src, alt };
     });
     return this.setState(prevState => {
@@ -51,6 +59,22 @@ class ImageGallery extends Component {
     });
   };
 
+  imageClick = e => {
+    if (e.target.nodeName !== 'IMG') {
+      return;
+    }
+
+    this.setState({ imgId: Number(e.target.dataset.id) }, this.toggleModal());
+  };
+
+  toggleModal = () => {
+    this.setState(prevState => ({ showModal: !prevState.showModal }));
+  };
+
+  handleData = () => {
+    return this.state.response.find(data => data.id === this.state.imgId);
+  };
+
   render() {
     const { status } = this.state;
 
@@ -65,10 +89,18 @@ class ImageGallery extends Component {
     if (status === 'resolved') {
       return (
         <>
-          <ul className={s.ImageGallery}>
+          <ul className={s.ImageGallery} onClick={this.imageClick}>
             <ImageGalleryItem images={this.state.response} />
           </ul>
           <Button onClick={this.handleLoadMore} />
+          {this.state.showModal && (
+            <Modal onClose={this.toggleModal}>
+              <img
+                src={this.handleData().imageURL}
+                alt={this.handleData().alt}
+              />
+            </Modal>
+          )}
         </>
       );
     }

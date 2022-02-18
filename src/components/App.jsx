@@ -22,5 +22,3 @@ export class App extends Component {
     );
   }
 }
-
-/* , <ImageGallery>, <ImageGalleryItem>, <Loader>, <Button> и <Modal></Modal>  */
