@@ -16,12 +16,13 @@ class ImageGallery extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.query !== prevProps.query) {
-      this.setState({ status: 'pending', response: [], page: 1 });
-      this.getPicture();
+      this.setState(
+        { status: 'pending', response: [], page: 1 },
+        this.getPicture,
+      );
     }
-    if (this.state.page !== prevState.page) {
-      this.setState({ status: 'pending' });
-      this.getPicture();
+    if (this.state.page !== prevState.page && this.state.page !== 1) {
+      this.setState({ status: 'pending' }, this.getPicture);
     }
   }
 
@@ -79,9 +80,7 @@ class ImageGallery extends Component {
       );
     }
 
-    if (status === 'idle') {
-      return <></>;
-    }
+    return <></>;
   }
 }
 

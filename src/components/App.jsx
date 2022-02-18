@@ -7,7 +7,10 @@ export class App extends Component {
     searchQuery: '',
   };
   handleSubmit = searchQuery => {
-    this.setState({ searchQuery });
+    if (this.state.searchQuery !== searchQuery) {
+      this.setState({ searchQuery });
+    }
+    return;
   };
 
   render() {
