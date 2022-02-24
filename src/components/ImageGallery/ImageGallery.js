@@ -1,9 +1,10 @@
-import { ServiceAPI } from 'components/API';
-import { Button } from 'components/Button';
-import { Modal } from '../Modal';
 import { Component } from 'react';
 import { Watch } from 'react-loader-spinner';
 import 'react-loader-spinner/dist/loader/css/react-spinner-loader.css';
+import PropTypes from 'prop-types';
+import { ServiceAPI } from 'components/API';
+import { Button } from 'components/Button';
+import { Modal } from '../Modal';
 import { ImageGalleryItem } from '.';
 import s from './ImageGallery.module.css';
 
@@ -30,13 +31,23 @@ class ImageGallery extends Component {
   }
 
   getPicture = () => {
-    ServiceAPI(this.props.query, this.state.page)
+    const { query } = this.props;
+    const { page } = this.state;
+    ServiceAPI(query, page)
       .then(this.dataProcessing)
       .catch(error => this.setState({ error, status: 'rejected' }));
   };
 
   dataProcessing = response => {
-    const data = response.data.hits.map(data => {
+    const { hits: dataArray } = response.data;
+    if (!dataArray.length) {
+      this.setState({
+        status: 'rejected',
+        error: new Error('Try to change the request'),
+      });
+      return;
+    }
+    const data = dataArray.map(data => {
       const {
         id,
         largeImageURL: imageURL,
@@ -45,17 +56,17 @@ class ImageGallery extends Component {
       } = data;
       return { id, imageURL, src, alt };
     });
-    return this.setState(prevState => {
+    return this.setState(({ response }) => {
       return {
-        response: [...prevState.response, ...data],
+        response: [...response, ...data],
         status: 'resolved',
       };
     });
   };
 
   handleLoadMore = () => {
-    this.setState(prevState => {
-      return { page: prevState.page + 1 };
+    this.setState(({ page }) => {
+      return { page: page + 1 };
     });
   };
 
@@ -68,7 +79,7 @@ class ImageGallery extends Component {
   };
 
   toggleModal = () => {
-    this.setState(prevState => ({ showModal: !prevState.showModal }));
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
   };
 
   handleData = () => {
@@ -76,12 +87,12 @@ class ImageGallery extends Component {
   };
 
   render() {
-    const { status } = this.state;
+    const { status, response, showModal, error } = this.state;
 
     if (status === 'rejected') {
       return (
         <ul className={s.ImageGallery}>
-          <li>Все плохо</li>
+          <li>{`Все плохо ${error}`}</li>
         </ul>
       );
     }
@@ -90,10 +101,10 @@ class ImageGallery extends Component {
       return (
         <>
           <ul className={s.ImageGallery} onClick={this.imageClick}>
-            <ImageGalleryItem images={this.state.response} />
+            <ImageGalleryItem images={response} />
           </ul>
           <Button onClick={this.handleLoadMore} />
-          {this.state.showModal && (
+          {showModal && (
             <Modal onClose={this.toggleModal}>
               <img
                 src={this.handleData().imageURL}
@@ -115,5 +126,9 @@ class ImageGallery extends Component {
     return <></>;
   }
 }
+
+ImageGallery.propTypes = {
+  query: PropTypes.string.isRequired,
+};
 
 export default ImageGallery;
