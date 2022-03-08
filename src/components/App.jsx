@@ -16,6 +16,7 @@ export class App extends Component {
     status: 'idle',
     showModal: false,
     imgId: null,
+    total: 0,
   };
 
   componentDidUpdate(prevProps, prevState) {
@@ -36,7 +37,8 @@ export class App extends Component {
   };
 
   dataProcessing = response => {
-    const { hits: dataArray } = response.data;
+    const { hits: dataArray, totalHits } = response.data;
+
     if (!dataArray.length) {
       this.setState({
         status: 'rejected',
@@ -62,6 +64,7 @@ export class App extends Component {
       return this.setState(({ data }) => {
         return {
           data: [...data, ...newData],
+          total: totalHits,
           status: 'resolved',
         };
       });
@@ -95,7 +98,7 @@ export class App extends Component {
   };
 
   render() {
-    const { status, error, data, showModal } = this.state;
+    const { status, error, data, showModal, total } = this.state;
 
     return (
       <div className="App">
@@ -103,7 +106,7 @@ export class App extends Component {
         {data.length > 0 && (
           <ImageGallery data={this.state.data} onClick={this.clickOnImage} />
         )}
-        {status === 'resolved' && (
+        {status === 'resolved' && data.length > 0 && data.length < total && (
           <>
             <Button onClick={this.handleLoadMore} />
           </>
