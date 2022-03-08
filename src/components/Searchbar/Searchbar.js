@@ -3,6 +3,11 @@ import { Component } from 'react';
 import s from './Searchbar.module.css';
 
 export class Searchbar extends Component {
+  static defaultProps = { onSubmit: null };
+
+  static propTypes = {
+    onSubmit: PropTypes.func.isRequired,
+  };
   state = {
     searchQuery: '',
   };
@@ -49,7 +54,3 @@ export class Searchbar extends Component {
     );
   }
 }
-
-Searchbar.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};

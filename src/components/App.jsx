@@ -1,23 +1,136 @@
 import { Component } from 'react';
-import ImageGallery from './ImageGallery';
+import { Watch } from 'react-loader-spinner';
+import { ServiceAPI } from './API';
+import { ImageGallery } from './ImageGallery';
+import s from './ImageGallery/ImageGallery.module.css';
 import { Searchbar } from './Searchbar';
+import { Button } from './Button';
+import { Modal } from './Modal';
 
 export class App extends Component {
   state = {
-    searchQuery: '',
+    query: '',
+    data: [],
+    page: 1,
+    error: null,
+    status: 'idle',
+    showModal: false,
+    imgId: null,
   };
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.query !== prevState.query) {
+      this.setState({ status: 'pending', data: [], page: 1 }, this.getPicture);
+    }
+    if (this.state.page !== prevState.page && this.state.page !== 1) {
+      this.setState({ status: 'pending' }, this.getPicture);
+    }
+  }
+
+  getPicture = () => {
+    const { query } = this.state;
+    const { page } = this.state;
+    ServiceAPI(query, page)
+      .then(this.dataProcessing)
+      .catch(error => this.setState({ error, status: 'rejected' }));
+  };
+
+  dataProcessing = response => {
+    const { hits: dataArray } = response.data;
+    if (!dataArray.length) {
+      this.setState({
+        status: 'rejected',
+        error: new Error('Try to change the request'),
+      });
+      return;
+    }
+    window.scrollBy({
+      top: document.body.clientHeight,
+      behavior: 'smooth',
+    });
+
+    setTimeout(() => {
+      const newData = dataArray.map(data => {
+        const {
+          id,
+          largeImageURL: imageURL,
+          webformatURL: src,
+          tags: alt,
+        } = data;
+        return { id, imageURL, src, alt };
+      });
+      return this.setState(({ data }) => {
+        return {
+          data: [...data, ...newData],
+          status: 'resolved',
+        };
+      });
+    }, 3000);
+  };
+
   handleSubmit = searchQuery => {
-    if (this.state.searchQuery !== searchQuery) {
-      this.setState({ searchQuery });
+    if (this.state.query !== searchQuery) {
+      this.setState({ query: searchQuery });
     }
     return;
   };
 
+  handleLoadMore = () => {
+    this.setState(({ page }) => {
+      return { page: page + 1 };
+    });
+  };
+
+  toggleModal = () => {
+    this.setState(({ showModal }) => ({ showModal: !showModal }));
+  };
+
+  clickOnImage = id => {
+    this.setState({ imgId: id });
+    this.toggleModal();
+  };
+
+  handleData = () => {
+    return this.state.data.find(img => img.id === this.state.imgId);
+  };
+
   render() {
+    const { status, error, data, showModal } = this.state;
+
     return (
       <div className="App">
         <Searchbar onSubmit={this.handleSubmit} />
-        <ImageGallery query={this.state.searchQuery} />
+        {data.length > 0 && (
+          <ImageGallery data={this.state.data} onClick={this.clickOnImage} />
+        )}
+        {status === 'resolved' && (
+          <>
+            <Button onClick={this.handleLoadMore} />
+          </>
+        )}
+
+        {status === 'pending' && (
+          <div className={s.Watch}>
+            <Watch
+              color="#00BFFF"
+              height={200}
+              width={200}
+              ariaLabel="loading"
+            />
+          </div>
+        )}
+
+        {status === 'rejected' && (
+          <ul className={s.ImageGallery}>
+            <li>{`Все плохо ${error}`}</li>
+          </ul>
+        )}
+
+        {showModal && (
+          <Modal onClose={this.toggleModal}>
+            <img src={this.handleData().imageURL} alt={this.handleData().alt} />
+          </Modal>
+        )}
       </div>
     );
   }
