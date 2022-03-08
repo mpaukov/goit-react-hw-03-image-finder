@@ -51,24 +51,22 @@ export class App extends Component {
       behavior: 'smooth',
     });
 
-    setTimeout(() => {
-      const newData = dataArray.map(data => {
-        const {
-          id,
-          largeImageURL: imageURL,
-          webformatURL: src,
-          tags: alt,
-        } = data;
-        return { id, imageURL, src, alt };
-      });
-      return this.setState(({ data }) => {
-        return {
-          data: [...data, ...newData],
-          total: totalHits,
-          status: 'resolved',
-        };
-      });
-    }, 3000);
+    const newData = dataArray.map(data => {
+      const {
+        id,
+        largeImageURL: imageURL,
+        webformatURL: src,
+        tags: alt,
+      } = data;
+      return { id, imageURL, src, alt };
+    });
+    return this.setState(({ data }) => {
+      return {
+        data: [...data, ...newData],
+        total: totalHits,
+        status: 'resolved',
+      };
+    });
   };
 
   handleSubmit = searchQuery => {
