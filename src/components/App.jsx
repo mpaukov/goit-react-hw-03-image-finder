@@ -122,9 +122,9 @@ export class App extends Component {
         )}
 
         {status === 'rejected' && (
-          <ul className={s.ImageGallery}>
-            <li>{`Все плохо ${error}`}</li>
-          </ul>
+          <div className={s.ImageGallery}>
+            <p>{`Something went wrong! ${error}`}</p>
+          </div>
         )}
 
         {showModal && (
